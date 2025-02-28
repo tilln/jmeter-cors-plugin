@@ -4,7 +4,7 @@
     <groupId>nz.co.breakpoint</groupId>
     <artifactId>jmeter-cors-plugin</artifactId>
     <packaging>jar</packaging>
-    <version>1.0</version>
+    <version>1.1</version>
     <name>JMeter CORS Plugin</name>
     <url>https://github.com/tilln/jmeter-cors-plugin</url>
 
