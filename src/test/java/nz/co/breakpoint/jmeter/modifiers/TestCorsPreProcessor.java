@@ -9,8 +9,6 @@ import org.apache.jmeter.threads.JMeterContextService;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.net.MalformedURLException;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -105,6 +103,15 @@ public class TestCorsPreProcessor {
         instance.process();
         instance.process();
         assertEquals(2, resultsListener.results.size());
+    }
+
+    @Test
+    public void itShouldRemoveAuthHeaderFromPreflight() {
+        sampler.addHeader("Authorization", "something secret");
+        instance.process();
+        assertEquals(1, resultsListener.results.size());
+        HTTPSampleResult result = resultsListener.results.get(0);
+        assertFalse(result.getRequestHeaders().contains("Authorization:"));
     }
 
 }

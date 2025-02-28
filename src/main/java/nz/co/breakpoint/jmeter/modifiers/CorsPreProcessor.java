@@ -127,14 +127,13 @@ public class CorsPreProcessor extends AbstractTestElement
         if (method.matches(allowedMethods) && preflightHeaders.isEmpty()) return; // simple request
 
         HTTPSamplerBase preflight = (HTTPSamplerBase) sampler.clone();
-        HeaderManager hm = new HeaderManager();
+        HeaderManager hm = preflight.getHeaderManager();
         hm.removeHeaderNamed(AUTHORIZATION);
         hm.removeHeaderNamed(ACCEPT);
         hm.add(new Header(ACCEPT, "*/*"));
         hm.add(new Header(ACCESS_CONTROL_REQUEST_METHOD, method));
         hm.add(new Header(ACCESS_CONTROL_REQUEST_HEADERS, String.join(",", preflightHeaders)));
 
-        preflight.setHeaderManager(hm);
         preflight.setMethod(OPTIONS);
         preflight.setName(preflight.getName() + getPreflightLabelSuffix());
         preflight.setThreadContext(context);
@@ -145,6 +144,7 @@ public class CorsPreProcessor extends AbstractTestElement
             return;
         }
         SampleResult result = preflight.sample();
+        result.setThreadName(context.getThread().getThreadName());
         addToPreflightCache(result);
         notifier.notifyListeners(new SampleEvent(result, context.getThreadGroup().getName()), listeners);
     }

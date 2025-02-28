@@ -1,6 +1,11 @@
 package nz.co.breakpoint.jmeter.modifiers;
 
 import java.net.URL;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.apache.jmeter.protocol.http.control.Header;
 import org.apache.jmeter.protocol.http.control.HeaderManager;
 import org.apache.jmeter.protocol.http.sampler.HTTPSamplerBase;
@@ -36,6 +41,15 @@ public class HTTPSamplerStub extends HTTPSamplerBase {
         result.setSampleLabel(url.toString());
         result.setHTTPMethod(method);
         result.setURL(url);
+
+        result.setRequestHeaders(StreamSupport.stream(
+            Spliterators.spliteratorUnknownSize(getHeaderManager().getHeaders().iterator(), Spliterator.ORDERED), false)
+                .map(headerProp -> {
+                    Header header = (Header) headerProp.getObjectValue();
+                    return String.format("%s: %s", header.getName(), header.getValue());
+                })
+                .collect(Collectors.joining("\n"))
+        );
         result.setResponseHeaders(String.format(
             "Access-Control-Max-Age: %d\n" +
             "Access-Control-Allow-Headers: %s\n" +
